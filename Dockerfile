@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 
 # Copy other necessary files into the container
 COPY deploy_and_run.sh .
-COPY Locustfile.py .
+COPY locustfile.py .
 COPY interpret_load_test.py .
 
 # Make the bash script executable
