@@ -13,10 +13,8 @@ RUN pip install --upgrade pip
 # Install project dependencies
 RUN pip install -r requirements.txt
 
-# Copy other necessary files into the container
-COPY run_test.sh .
-COPY locustfile.py .
-COPY interpret_load_test.py .
+# Copy the content of the project into the container
+COPY . .
 
 # Make the bash script executable
 RUN chmod +x run_test.sh

@@ -2,7 +2,7 @@
 
 # Function to run Locust test
 function run_locust_test() {
-    locust -f Locustfile.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f locustfile.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
 }
 
 
@@ -14,6 +14,9 @@ function run_load_test_script() {
 # Deploy your project (assuming deployment commands are here)
 # Replace the following line with your deployment commands
 echo "Deploying your project..."
+
+# print content in current dir 
+ls -lAh
 
 # Run tests indefinitely
 while true; do
