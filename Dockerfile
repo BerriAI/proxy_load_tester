@@ -1,5 +1,5 @@
 # Use a base image with necessary dependencies (e.g., Python, Locust, etc.)
-FROM python:3.10-slim
+FROM python:3.8.3-buster
 
 # Set the working directory in the container
 WORKDIR /app
