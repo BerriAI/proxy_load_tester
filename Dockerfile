@@ -14,12 +14,12 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Copy other necessary files into the container
-COPY deploy_and_run.sh .
+COPY run_test.sh .
 COPY locustfile.py .
 COPY interpret_load_test.py .
 
 # Make the bash script executable
-RUN chmod +x deploy_and_run.sh
+RUN chmod +x run_test.sh
 
 # Run the bash script when the container starts
-CMD ["./deploy_and_run.sh"]
+CMD ["./run_test.sh"]
