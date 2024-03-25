@@ -1,20 +1,25 @@
-# Stage 1: Build environment
-FROM python:3.8.3-buster AS builder
+# Use a base image with necessary dependencies (e.g., Python)
+FROM python:3.9-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
+# Copy the requirements file into the container
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
 
-# Stage 2: Runtime environment
-FROM python:3.8.3-buster
+# Update pip
+RUN pip install --upgrade pip
 
-WORKDIR /app
+# Install project dependencies
+RUN pip install -r requirements.txt
 
-COPY --from=builder /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
-COPY . .
+# Copy other necessary files into the container
+COPY deploy_and_run.sh .
+COPY Locustfile.py .
+COPY interpret_load_test.py .
 
+# Make the bash script executable
 RUN chmod +x deploy_and_run.sh
 
+# Run the bash script when the container starts
 CMD ["./deploy_and_run.sh"]
