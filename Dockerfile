@@ -8,10 +8,8 @@ RUN pip install -r requirements.txt
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the required files into the container
-COPY deploy_and_run.sh .
-COPY Locustfile.py .
-COPY interpret_load_test.py .
+# Copy the project files into the container
+COPY . .
 
 # Make the bash script executable
 RUN chmod +x deploy_and_run.sh
