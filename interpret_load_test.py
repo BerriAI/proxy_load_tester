@@ -3,6 +3,7 @@ import os
 import requests
 import dotenv
 import time
+import sys
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -74,9 +75,16 @@ def interpret_results(csv_file):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 interpret_load_test.py <test_name>")
+        sys.exit(1)
+
+    test_name = sys.argv[1]
+    print("Interpreting results for test: " + test_name)
     csv_file = "load_test_stats.csv"  # Change this to the path of your CSV file
     markdown_table = interpret_results(csv_file)
     print(markdown_table)
+    markdown_table = "\nTest Name: " + f"`{test_name}`\n" + markdown_table
 
 
     slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL", None)

@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # Function to run Locust test
-function run_locust_test() {
-    locust -f locustfile.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+function run_all_cache_hits_locust_test() {
+    locust -f all_cache_hits.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 10 --csv load_test
 }
 
 
-# Function to run load test script
-function run_load_test_script() {
-    python3 interpret_load_test.py
+function run_no_cache_hits_locust_test() {
+    locust -f no_cache_hits.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 10 --csv load_test
 }
 
 # Deploy your project (assuming deployment commands are here)
@@ -22,19 +21,21 @@ ls -lAh
 while true; do
     echo "Running tests..."
 
-    # Run the initial Locust test
-    run_locust_test
+    # All Cache hits test
+    run_all_cache_hits_locust_test
 
     # Run the load test script
-    run_load_test_script
+    python3 interpret_load_test.py all_cache_hits
 
     # Wait for 20 seconds
     echo "Waiting for 20 seconds..."
     sleep 20
 
-    # Run the Locust test loop again
-    run_locust_test
+    # No cache hits test
+    run_no_cache_hits_locust_test
 
     # Run the load test script again
-    run_load_test_script
+    python3 interpret_load_test.py no_cache_hits
+
+    # 
 done
