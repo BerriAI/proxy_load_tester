@@ -40,10 +40,10 @@ while true; do
     # sleep 20
 
     # # No cache hits test
-    # run_no_cache_hits_locust_test
+    run_no_cache_hits_locust_test
 
-    # # Run the load test script again
-    # python3 interpret_load_test.py no_cache_hits
+    # Run the load test script again
+    python3 interpret_load_test.py no_cache_hits
 
     # Cache off test
     run_cache_off_locust_test
