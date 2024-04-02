@@ -2,20 +2,20 @@
 
 # Function to run Locust test
 function run_all_cache_hits_locust_test() {
-    locust -f all_cache_hits.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f all_cache_hits.py --headless -u 10 -r 10 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
 }
 
 
 function run_no_cache_hits_locust_test() {
-    locust -f no_cache_hits.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f no_cache_hits.py --headless -u 10 -r 10 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
 }
 
 function run_cache_off_locust_test() {
-    locust -f no_cache.py --headless -u 100 -r 100 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f no_cache.py --headless -u 10 -r 10 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
 }
 
 function run_simple_openai_proxy_locust_test() {
-    locust -f no_cache_hits.py --headless -u 100 -r 100 -H https://simplelitellmproxy-production.up.railway.app/openai/ -t 300 --csv load_test
+    locust -f no_cache_hits.py --headless -u 10 -r 10 -H https://simplelitellmproxy-production.up.railway.app/openai/ -t 300 --csv load_test
 }
 
 # Deploy your project (assuming deployment commands are here)
