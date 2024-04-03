@@ -14,7 +14,7 @@ def new_stable_release(version):
               "https://api.github.com/repos/BerriAI/litellm/actions/workflows/ghcr_deploy.yml/dispatches" \
               -d "{\"ref\":\"main\", \"inputs\":{\"tag\":\"v${VERSION}\"}}"
     """
-    new_version_name = f"stable"
+    new_version_name = f"v{version}-stable"
     response = requests.post(
         "https://api.github.com/repos/BerriAI/litellm/actions/workflows/ghcr_deploy.yml/dispatches",
         headers={
@@ -28,4 +28,4 @@ def new_stable_release(version):
     print("response.status_code: ", response.status_code)
 
 
-# new_stable_release("1.34.21")
+# new_stable_release("1.34.22.dev15")
