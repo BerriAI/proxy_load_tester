@@ -7,6 +7,7 @@ import sys
 import requests
 import csv
 import boto3
+import github_helper
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -15,7 +16,7 @@ PASSING_MEDIAN_RESPONSE=200
 PASSING_AVERAGE_RESPONSE=200
 PASSING_FAILURE_COUNT=10
 PASSING_NUMBER_REQUESTS=144             # Total number mins = 144 * 5 = 720 = 12 hours
-PASSING_NUMBER_REQUESTS_DEV=1    
+PASSING_NUMBER_REQUESTS_DEV=5    
 
 
 STABLE_RELEASES_FILE = "stable_releases.txt"
@@ -120,7 +121,8 @@ def calculate_aggregate_metrics(file_name, current_version):
             total_failure_count += int(row["Failure Count"])
             median_response_times.append(float(row["Median Response Time"]))  
             average_response_times.append(float(row["Average Response Time"]))
-
+    # upload this file to s3
+    upload_to_s3(file_name, "litellm-load-tests", f"all_results_{current_version}.csv")
     # Calculating aggregate metrics
     total_tests = csvreader.line_num - 1  # Excluding header
     print("Total tests: " + str(total_tests))
@@ -131,8 +133,7 @@ def calculate_aggregate_metrics(file_name, current_version):
         return None
     
 
-    # upload this file to s3
-    upload_to_s3(file_name, "litellm-load-tests", f"all_results_{current_version}.csv")
+
 
     # Calculating average of average response times
     average_of_average_response_times = sum(average_response_times) / total_tests
@@ -267,6 +268,9 @@ def interpret_results(csv_file, current_version, test_name=None):
         if aggregate_metrics is not None:
             stable_releases.append(current_version)
             send_slack_message(f"✅Release is stable. \n`Version={current_version}` \n `{aggregate_metrics}`")
+
+            # queue a new stable release on github
+            github_helper.new_stable_release()
         else:
             unstable_releases.append(current_version)
         save_stable_releases(stable_releases)

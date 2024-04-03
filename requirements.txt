@@ -1,3 +1,4 @@
 locust==2.24.0
 python-dotenv
+boto3
 uuid
