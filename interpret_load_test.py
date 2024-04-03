@@ -143,17 +143,17 @@ def calculate_aggregate_metrics(file_name, current_version):
     if median_of_median_response_times > PASSING_MEDIAN_RESPONSE:
         # send a slack alert 
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is greater than {PASSING_MEDIAN_RESPONSE}")
-        return None
+        return False
     
     if total_failure_count > PASSING_FAILURE_COUNT:
         # send a slack alert
 
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Failure Count={total_failure_count} is greater than {PASSING_FAILURE_COUNT}")
-        return None
+        return False
 
     if average_of_average_response_times > PASSING_AVERAGE_RESPONSE:
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Average Response Time={average_of_average_response_times} is greater than {PASSING_AVERAGE_RESPONSE}")
-        return None
+        return False
     
     return {
         "Request Count": total_request_count,
@@ -266,13 +266,16 @@ def interpret_results(csv_file, current_version, test_name=None):
         # Read CSV FILE and count total number of entries  
         aggregate_metrics = calculate_aggregate_metrics(file_name, current_version)
         if aggregate_metrics is not None:
+            if aggregate_metrics == False:
+                # it failed a test - this is an unstable release
+                unstable_releases.append(current_version)
+                return results
+            
             stable_releases.append(current_version)
             send_slack_message(f"✅Release is stable. \n`Version={current_version}` \n `{aggregate_metrics}`")
 
             # queue a new stable release on github
-            github_helper.new_stable_release()
-        else:
-            unstable_releases.append(current_version)
+            github_helper.new_stable_release(version=current_version)
         save_stable_releases(stable_releases)
         save_unstable_releases(unstable_releases)
         return results
