@@ -125,7 +125,7 @@ def calculate_aggregate_metrics(file_name, current_version):
     upload_to_s3(file_name, "litellm-load-tests", f"all_results_{current_version}.csv")
     # Calculating aggregate metrics
     total_tests = csvreader.line_num - 1  # Excluding header
-    print("Total tests: " + str(total_tests))
+    print("Total tests: " + str(total_tests), "current version: " + current_version)
     if total_tests == 0:
         return None  # No data found
     
