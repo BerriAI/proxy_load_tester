@@ -63216,3 +63216,61 @@
 {"error":{"message":"No healthy deployment available, passed model=fake-openai-endpoint","type":"None","param":"None","code":429}}
 {"error":{"message":"No healthy deployment available, passed model=fake-openai-endpoint","type":"None","param":"None","code":429}}
 {"error":{"message":"No healthy deployment available, passed model=fake-openai-endpoint","type":"None","param":"None","code":429}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+{"detail":"Not Found"}
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
+Internal Server Error
