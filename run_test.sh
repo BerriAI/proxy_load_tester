@@ -2,7 +2,7 @@
 
 # Function to run Locust test
 function run_all_cache_hits_locust_test() {
-    locust -f all_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/ -t 10 --csv load_test
+    locust -f all_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/ -t 300 --csv load_test
 }
 
 
