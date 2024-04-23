@@ -27,7 +27,8 @@ def new_stable_release(version):
         json={"ref": "main", "inputs": 
               {
                 "tag": new_version_name,
-                "commit_hash": commit_hash
+                "commit_hash": commit_hash,
+                "release_type": "stable"
             }
         },
     )
