@@ -2,20 +2,20 @@
 
 # Function to run Locust test
 function run_all_cache_hits_locust_test() {
-    locust -f all_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/ -t 300 --csv load_test
+    locust -f all_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/ -t 100 --csv load_test
 }
 
 
 function run_no_cache_hits_locust_test() {
-    locust -f no_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/  -t 300 --csv load_test
+    locust -f no_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/  -t 100 --csv load_test
 }
 
 function run_cache_off_locust_test() {
-    locust -f no_cache.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/  -t 300 --csv load_test
+    locust -f no_cache.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/  -t 100 --csv load_test
 }
 
 function run_simple_openai_proxy_locust_test() {
-    locust -f no_cache_hits.py --headless -u 20 -r 20 -H https://simplelitellmproxy-production.up.railway.app/openai/ -t 300 --csv load_test
+    locust -f no_cache_hits.py --headless -u 20 -r 20 -H https://simplelitellmproxy-production.up.railway.app/openai/ -t 100 --csv load_test
 }
 
 # Deploy your project (assuming deployment commands are here)
