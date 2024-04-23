@@ -2,16 +2,16 @@
 
 # Function to run Locust test
 function run_all_cache_hits_locust_test() {
-    locust -f all_cache_hits.py --headless -u 20 -r 20 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f all_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/ -t 300 --csv load_test
 }
 
 
 function run_no_cache_hits_locust_test() {
-    locust -f no_cache_hits.py --headless -u 20 -r 20 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f no_cache_hits.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/  -t 300 --csv load_test
 }
 
 function run_cache_off_locust_test() {
-    locust -f no_cache.py --headless -u 20 -r 20 -H http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/ -t 300 --csv load_test
+    locust -f no_cache.py --headless -u 20 -r 20 -H https://litellm-main-latest.onrender.com/  -t 300 --csv load_test
 }
 
 function run_simple_openai_proxy_locust_test() {
