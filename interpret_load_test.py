@@ -78,8 +78,8 @@ def upload_to_s3(file_path, bucket_name, object_name):
 
 def get_current_litellm_version():
     try:
-        # get request to http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/health/readiness
-        response = requests.get('http://a472dc7c273fd47fd9a20434f463afd1-393291597.us-west-2.elb.amazonaws.com:4000/health/readiness')
+        print("getting current litellm version")
+        response = requests.get('https://litellm-main-latest.onrender.com/health/readiness')
         version = response.json()["litellm_version"]
         
         filename = f"all_results_{version}.csv"
@@ -282,7 +282,9 @@ def interpret_results(csv_file, current_version, test_name=None):
 
 
 if __name__ == "__main__":
+    print("interpreting load test results")
     version = get_current_litellm_version()
+    print("current litellm version", version)
     if len(sys.argv) < 2:
         print("Usage: python3 interpret_load_test.py <test_name>")
         sys.exit(1)
