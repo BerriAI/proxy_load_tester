@@ -59,6 +59,7 @@ def get_release_commit_hash(version_number=None):
     print(release_info)
     print(release_info.target_commitish)
     print("commit hash: ", release_info.target_commitish)
+    return release_info.target_commitish
 
 
 
