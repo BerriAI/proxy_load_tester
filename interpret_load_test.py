@@ -79,7 +79,7 @@ def upload_to_s3(file_path, bucket_name, object_name):
 def get_current_litellm_version():
     try:
         print("getting current litellm version")
-        response = requests.get('https://litellm-main-latest.onrender.com/health/readiness')
+        response = requests.get('https://staging.litellm.ai/health/readiness')
         version = response.json()["litellm_version"]
         
         filename = f"all_results_{version}.csv"
@@ -104,8 +104,6 @@ def send_slack_message(message):
 
     if response.status_code == 200:
         pass
-
-
 
 
 def calculate_aggregate_metrics(file_name, current_version):
@@ -319,4 +317,7 @@ if __name__ == "__main__":
     response = requests.post(slack_webhook_url, json=payload, headers=headers)
 
     if response.status_code == 200:
-        pass    
+        pass
+    else:
+        print("sending slack message failed")
+        print(response.text)

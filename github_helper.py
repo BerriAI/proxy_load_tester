@@ -67,3 +67,13 @@ def get_release_commit_hash(version_number=None):
 # get_release_commit_hash(
 #     version_number="v1.34.28"
 # )
+
+
+
+def get_latest_relased_version():
+    g = Github(os.getenv("GITHUB_TOKEN"))
+    repo = g.get_repo("BerriAI/litellm")
+    latest_release = repo.get_latest_release()
+    print(latest_release)
+    print(latest_release.tag_name)
+    return latest_release.tag_name
