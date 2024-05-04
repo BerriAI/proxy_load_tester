@@ -268,12 +268,12 @@ def interpret_results(csv_file, current_version, test_name=None):
                 # it failed a test - this is an unstable release
                 unstable_releases.append(current_version)
                 return results
-            
-            stable_releases.append(current_version)
-            send_slack_message(f"✅Release is stable. \n`Version={current_version}` \n `{aggregate_metrics}`")
+            if current_version not in stable_releases:
+                stable_releases.append(current_version)
+                send_slack_message(f"✅Release is stable. \n`Version={current_version}` \n `{aggregate_metrics}`")
 
-            # queue a new stable release on github
-            github_helper.new_stable_release(version=current_version)
+                # queue a new stable release on github
+                github_helper.new_stable_release(version=current_version)
         save_stable_releases(stable_releases)
         save_unstable_releases(unstable_releases)
         return results
