@@ -26,9 +26,10 @@ echo "Deploying your project..."
 # print content in current dir 
 ls -lAh
 
-# Run tests indefinitely
+# Run tests -> interpret_load_test.py 
 while true; do
     echo "Running tests..."
+    python3 should_run_test.py # polls github to check if new release, once there is breaks out of loop
 
     # All Cache hits test
     run_all_cache_hits_locust_test
