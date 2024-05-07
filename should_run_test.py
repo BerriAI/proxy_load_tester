@@ -43,6 +43,7 @@ def check_if_latest_was_tested():
 
     print("latest version from github", latest)
     if "dev" in latest or "stable" in latest:
+        print("latest version is a dev or stable version, skipping load test")
         return False
 
 
