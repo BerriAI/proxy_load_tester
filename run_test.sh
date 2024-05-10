@@ -29,6 +29,12 @@ ls -lAh
 # Run tests -> interpret_load_test.py 
 while true; do
     echo "Running tests..."
+
+    # if env variable 'STOP_TEST=1' then break while loop
+    if [ "$STOP_TEST" = "1" ]; then
+        break
+    fi
+
     python3 should_run_test.py # polls github to check if new release, once there is breaks out of loop
 
     # All Cache hits test
