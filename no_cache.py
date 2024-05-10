@@ -9,7 +9,7 @@ class MyUser(HttpUser):
     def litellm_completion(self):
         # no cache hits with this
         payload = {
-            "model": "fake-openai-endpoint",
+            "model": "db-openai-endpoint",
             "messages": [{"role": "user", "content": f"{uuid.uuid4()} This is a test there will be no cache hits and we'll fill up the context" * 150}],
             "user": "my-new-end-user-1",
             "cache": {

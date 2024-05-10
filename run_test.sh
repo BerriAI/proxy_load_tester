@@ -35,13 +35,8 @@ while true; do
         break
     fi
 
+
     python3 should_run_test.py # polls github to check if new release, once there is breaks out of loop
-
-    # All Cache hits test
-    run_all_cache_hits_locust_test
-
-    # Run the load test script
-    python3 interpret_load_test.py all_cache_hits
 
     # # Wait for 20 seconds
     # echo "Waiting for 20 seconds..."
@@ -57,5 +52,12 @@ while true; do
     run_cache_off_locust_test
 
     python3 interpret_load_test.py cache_off_test
+
+        # All Cache hits test
+    run_all_cache_hits_locust_test
+
+    # Run the load test script
+    python3 interpret_load_test.py all_cache_hits
+
 
 done
