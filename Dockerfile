@@ -16,8 +16,8 @@ RUN pip install -r requirements.txt
 # Copy the content of the project into the container
 COPY . .
 
-# Make the bash script executable
-RUN chmod +x run_test.sh
+# Expose the port the app will run on
+EXPOSE 8001
 
-# Run the bash script when the container starts
-CMD ["./run_test.sh"]
+# Start the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
