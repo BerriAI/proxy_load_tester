@@ -3,3 +3,5 @@ python-dotenv
 boto3
 uuid
 PyGithub
+fastapi
+uvicorn
