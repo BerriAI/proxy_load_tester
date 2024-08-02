@@ -3,7 +3,7 @@ Fast API app
 
 - POST /start/load/test, params = {version, commit_hash}
 """
-
+import time
 from fastapi import FastAPI, Query, BackgroundTasks
 from should_run_test import bump_version_and_check_num_models
 from github_helper import new_stable_release
@@ -13,6 +13,9 @@ from interpret_load_test import write_test_results_to_csv, get_current_litellm_v
 app = FastAPI()
 def background_task(version: str, commit_hash: str):
     print(f"Starting load test for version {version} with commit hash {commit_hash}")
+
+    # it takes 15 mins for a new docker build, sleep for 30 mins
+    time.sleep(30*60)
 
     # bump staging server version
     bump_version_and_check_num_models()
