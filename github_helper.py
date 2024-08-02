@@ -6,9 +6,8 @@ from github import Github
 load_dotenv()
 
 
-def new_stable_release(version):
+def new_stable_release(version, commit_hash):
     print("starting a new stable release for version=", version)
-    commit_hash = get_release_commit_hash(version)
     """
     Send
     curl -X POST \
@@ -35,45 +34,3 @@ def new_stable_release(version):
     print("response: ", response)
     print("response.text: ", response.text)
     print("response.status_code: ", response.status_code)
-
-
-# new_stable_release("1.34.22.dev15")
-
-
-def get_release_commit_hash(version_number=None):
-    github_token = os.getenv("GITHUB_TOKEN")
-    print("getting release commit hash for ", version_number)
-    version_number = str(version_number)
-    if not version_number.startswith("v"):
-        version_number = f"v{version_number}"
-    g = Github(github_token)
-    repo = g.get_repo(
-        "BerriAI/litellm"
-    )  # Replace with your repository's username and name
-
-    print("getting release =", version_number, "from repo=", repo)
-
-    release_info = repo.get_release(
-        id=version_number
-    )
-
-    print(release_info)
-    print(release_info.target_commitish)
-    print("commit hash: ", release_info.target_commitish)
-    return release_info.target_commitish
-
-
-
-# get_release_commit_hash(
-#     version_number="v1.34.28"
-# )
-
-
-
-def get_latest_relased_version():
-    g = Github(os.getenv("GITHUB_TOKEN"))
-    repo = g.get_repo("BerriAI/litellm")
-    latest_release = repo.get_latest_release()
-    print(latest_release)
-    print(latest_release.tag_name)
-    return latest_release.tag_name

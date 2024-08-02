@@ -19,22 +19,6 @@ function run_cache_off_locust_test() {
     locust -f no_cache.py --headless -u 20 -r 20 -H https://staging.litellm.ai/ -t 300 --csv load_test
 }
 
-# Deploy your project (assuming deployment commands are here)
-# Replace the following line with your deployment commands
-echo "Deploying your project..."
-
-# print content in current dir 
-ls -lAh
-
-# Run tests -> interpret_load_test.py 
-while true; do
-    echo "Running tests..."
-
-    # if env variable 'STOP_TEST=1' then break while loop
-    if [ "$STOP_TEST" = "1" ]; then
-        break
-    fi
-
 
     python3 should_run_test.py # polls github to check if new release, once there is breaks out of loop
 

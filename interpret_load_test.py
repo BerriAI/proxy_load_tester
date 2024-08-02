@@ -16,7 +16,7 @@ PASSING_MEDIAN_RESPONSE=200
 PASSING_AVERAGE_RESPONSE=200
 PASSING_FAILURE_COUNT=10
 PASSING_NUMBER_REQUESTS=144             # Total number mins = 144 * 5 = 720 = 12 hours
-PASSING_NUMBER_REQUESTS_DEV=12    
+PASSING_NUMBER_REQUESTS_DEV=12          # Total number mins = 12 * 5 = 60 = 1 hours
 
 
 STABLE_RELEASES_FILE = "stable_releases.txt"
@@ -106,11 +106,13 @@ def send_slack_message(message):
         pass
 
 
-def calculate_aggregate_metrics(file_name, current_version):
+def calculate_aggregate_metrics(current_version):
     total_request_count = 0
     total_failure_count = 0
     average_response_times = []
     median_response_times = []
+
+    file_name = f"all_results_{current_version}.csv"
 
     with open(file_name, newline="") as csvfile:
         csvreader = csv.DictReader(csvfile)
@@ -123,7 +125,7 @@ def calculate_aggregate_metrics(file_name, current_version):
     upload_to_s3(file_name, "litellm-load-tests", f"all_results_{current_version}.csv")
     # Calculating aggregate metrics
     total_tests = csvreader.line_num - 1  # Excluding header
-    print("Total tests: " + str(total_tests), "current version: " + current_version)
+    print("Total tests: " + str(total_tests), "current version: " + current_version + "passing number requests: " + str(PASSING_NUMBER_REQUESTS_DEV))
     if total_tests == 0:
         return None  # No data found
     
@@ -163,7 +165,8 @@ def calculate_aggregate_metrics(file_name, current_version):
 
 
 
-def interpret_results(csv_file, current_version, test_name=None):
+def write_test_results_to_csv(csv_file, current_version, test_name=None):
+    print("writing test results for file: " + csv_file + "for current version: " + current_version + "for test name: " + test_name)
     with open(csv_file, newline="") as csvfile:
         csvreader = csv.DictReader(csvfile)
         rows = list(csvreader)
@@ -229,20 +232,6 @@ def interpret_results(csv_file, current_version, test_name=None):
 
             results += result
 
-        # Stable Release Logic ######
-        stable_releases = load_stable_releases()
-        print("stable releases", stable_releases)
-
-        unstable_releases = load_unstable_releases()
-        print("unstable releases", unstable_releases)
-
-        print("current version", current_version)
-        if current_version in stable_releases:
-            return results
-
-        if current_version in unstable_releases:
-            return results
-
         file_name = f"all_results_{current_version}.csv"
         with open(file_name, "a", newline="") as csvfile:
             # add all the rows to the csv file
@@ -258,66 +247,5 @@ def interpret_results(csv_file, current_version, test_name=None):
                 writer.writeheader()
 
             writer.writerows(rows)
+    return
             
-
-        # Check if we have enough rows to create a new litellm release
-        # Read CSV FILE and count total number of entries  
-        aggregate_metrics = calculate_aggregate_metrics(file_name, current_version)
-        if aggregate_metrics is not None:
-            if aggregate_metrics == False:
-                # it failed a test - this is an unstable release
-                unstable_releases.append(current_version)
-                return results
-            if current_version not in stable_releases:
-                stable_releases.append(current_version)
-                send_slack_message(f"✅Release is stable. \n`Version={current_version}` \n `{aggregate_metrics}`")
-
-                # queue a new stable release on github
-                github_helper.new_stable_release(version=current_version)
-        save_stable_releases(stable_releases)
-        save_unstable_releases(unstable_releases)
-        return results
-
-
-if __name__ == "__main__":
-    print("interpreting load test results")
-    version = get_current_litellm_version()
-    print("current litellm version", version)
-    if len(sys.argv) < 2:
-        print("Usage: python3 interpret_load_test.py <test_name>")
-        sys.exit(1)
-
-    test_name = sys.argv[1]
-    print("Interpreting results for test: " + test_name)
-    csv_file = "load_test_stats.csv"  # Change this to the path of your CSV file
-    markdown_table = interpret_results(
-        csv_file, 
-        current_version=version,
-        test_name=test_name
-    )
-    print(markdown_table)
-    markdown_table = "\nTest Name: " + f"`{test_name}`\n" + markdown_table
-
-
-    slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL", None)
-    if slack_webhook_url is None:
-        raise Exception("Missing SLACK_WEBHOOK_URL from environment")
-    
-    payload = {"text": markdown_table}
-    headers = {"Content-type": "application/json"}
-
-
-    slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL", None)
-    if slack_webhook_url is None:
-        raise Exception("Missing SLACK_WEBHOOK_URL from environment")
-
-    payload = {"text": markdown_table}
-    headers = {"Content-type": "application/json"}
-
-    response = requests.post(slack_webhook_url, json=payload, headers=headers)
-
-    if response.status_code == 200:
-        pass
-    else:
-        print("sending slack message failed")
-        print(response.text)

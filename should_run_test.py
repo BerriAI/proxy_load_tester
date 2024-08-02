@@ -1,3 +1,5 @@
+import os
+import requests
 # decides if we need to run a load test or not
 
 """
@@ -89,44 +91,24 @@ def _check_num_models():
     _num_azure_models_in_db = [model for model in _models if model["litellm_params"]["model"].startswith("azure")]
     print("_num_azure_models_in_db: ", len(_num_azure_models_in_db))
 
-    assert len(_num_azure_models_in_db) > 10, f"At minimum staging should have 10 azure models, found only {len(_num_azure_models_in_db)}"
+    assert len(_num_azure_models_in_db) >= 10, f"At minimum staging should have 10 azure models, found only {len(_num_azure_models_in_db)}"
     print("num azure models in db: ", len(_num_azure_models_in_db))
     return True
 
 
 
-def should_run_test():
+def bump_version_and_check_num_models():
     if _check_num_models() != True:
         raise Exception("Number of models is not configure correctly - please look at logs")
-    was_latest_tested, latest = check_if_latest_was_tested()
-    if not was_latest_tested:
-        # we need to run load testing ! 
-        # before running the test - check if we need to re-deploy staging
-        version = get_current_litellm_version()
-        if version != latest:
-            # run curl to bump staging version
-            _webhook = os.getenv('STAGING_DEPLOY_WEBHOOK')
-            result = requests.get(_webhook)
-            if result.status_code == 200:
-                print("triggered new staging deploy + ready to run a new test. sleeping for 30 seconds before running a new test")
-                time.sleep(30)
-                return True
+
+    # run curl to bump staging version
+    _webhook = os.getenv('STAGING_DEPLOY_WEBHOOK')
+    result = requests.get(_webhook)
+    if result.status_code == 200:
+        print("triggered new staging deploy + ready to run a new test. sleeping for 30 seconds before running a new test")
+        time.sleep(30)
         return True
     else:
         print("no need to trigger new staging deploy / load test. check_if_latest_was_tested=True")
         return False
 
-
-
-def main():
-    while True:
-        if should_run_test():
-            # Run your test code here
-            print("should_run_test = True. Running the load test")
-            break
-        else:
-            print("Not running the test, should_run_test returned False. Sleeping for 1 min and then calling should_run_test again.")
-            time.sleep(60)  # Wait for 1 minute
-
-if __name__ == "__main__":
-    main()
