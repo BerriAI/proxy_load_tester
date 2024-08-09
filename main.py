@@ -65,7 +65,7 @@ def run_stable_release_testing(current_version, csv_file):
     # runs this 4 times 
     # each test is 5 mins, 
     # total time = 60 mins for all tests
-    for _ in range(3):
+    for _ in range(4):
         run_all_cache_hits_locust_test()
         write_test_results_to_csv(
             csv_file=csv_file,
