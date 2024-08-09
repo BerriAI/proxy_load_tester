@@ -4,6 +4,7 @@ Fast API app
 - POST /start/load/test, params = {version, commit_hash}
 """
 import time
+from typing import Optional
 from fastapi import FastAPI, Query, BackgroundTasks
 from should_run_test import bump_version_and_check_num_models
 from github_helper import new_stable_release
@@ -11,11 +12,14 @@ from run_locust_tests import run_all_cache_hits_locust_test, run_cache_off_locus
 from interpret_load_test import write_test_results_to_csv, get_current_litellm_version, calculate_aggregate_metrics
 
 app = FastAPI()
-def background_task(version: str, commit_hash: str):
+def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] = False):
     print(f"Starting load test for version {version} with commit hash {commit_hash}")
 
     # it takes 15 mins for a new docker build, sleep for 30 mins
-    time.sleep(30*60)
+    if skip_sleep is True:
+        print("skipping sleep")
+    else:
+        time.sleep(30*60)
 
     # bump staging server version
     bump_version_and_check_num_models()
@@ -44,11 +48,12 @@ def background_task(version: str, commit_hash: str):
 async def start_load_test(
     background_tasks: BackgroundTasks,
     version: str = Query(..., description="Version of the load test"),
-    commit_hash: str = Query(..., description="Commit hash for the load test")
+    commit_hash: str = Query(..., description="Commit hash for the load test"),
+    skip_sleep: Optional[bool] = False
 ):
 
     print(f"Starting load test for version {version} with commit hash {commit_hash}")
-    background_tasks.add_task(background_task, version, commit_hash)
+    background_tasks.add_task(background_task, version, commit_hash, skip_sleep)
 
     return {
         "message": "Load test started",
