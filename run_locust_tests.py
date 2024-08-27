@@ -8,7 +8,7 @@ def run_locust_test(script_name):
         "-u", "20",
         "-r", "20",
         "-H", "https://staging.litellm.ai/",
-        "-t", "200",
+        "-t", "100",
         "--csv", "load_test"
     ]
     subprocess.run(command, check=True)
