@@ -192,7 +192,7 @@ def calculate_aggregate_metrics(current_version):
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times_large} is greater than {PASSING_MEDIAN_RESPONSE}")
         return False
     
-    send_slack_message(f"✅✅✅✅✅✅✅✅✅✅\nRelease is stable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE} \n Failure Count={total_failure_count} is less than {PASSING_FAILURE_COUNT} \n Average Response Time={average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE}. \n Large Median Response Time={large_median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE_LARGE_TESTS} \n Large Average Response Time={large_average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE_LARGE_TESTS} \n Large Failure Count={large_total_failure_count} is less than {PASSING_FAILURE_COUNT_LARGE}")
+    send_slack_message(f"✅✅✅✅✅✅✅✅✅✅\nRelease is stable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE} \n Failure Count={total_failure_count} is less than {PASSING_FAILURE_COUNT} \n Average Response Time={average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE}. \n Large Tests 100 RPS Median Response Time={median_of_median_response_times_large} is less than {PASSING_MEDIAN_RESPONSE_LARGE_TESTS} \n Large Tests (100 RPS) Average Response Time={average_of_average_response_times_large} is less than {PASSING_AVERAGE_RESPONSE_LARGE_TESTS} \n Large Failure Count={large_total_failure_count} is less than {PASSING_FAILURE_COUNT}")
 
     return {
         "Request Count": total_request_count,
