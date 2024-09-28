@@ -12,11 +12,15 @@ import github_helper
 from dotenv import load_dotenv
 load_dotenv()
 
-PASSING_MEDIAN_RESPONSE=150
+PASSING_MEDIAN_RESPONSE=150 # Expected 150ms for 20 RPS
 PASSING_AVERAGE_RESPONSE=150
+
+PASSING_AVERAGE_RESPONSE_LARGE_TESTS=300 # Expected 300ms for 100 RPS
+PASSING_MEDIAN_RESPONSE_LARGE_TESTS=300
+
 PASSING_FAILURE_COUNT=10
 PASSING_NUMBER_REQUESTS=144             # Total number mins = 144 * 5 = 720 = 12 hours
-PASSING_NUMBER_REQUESTS_DEV=12          # Total number mins = 12 * 5 = 60 = 1 hours
+PASSING_NUMBER_REQUESTS_DEV=15          # Total number mins = 12 * 5 = 60 = 1 hours
 
 
 STABLE_RELEASES_FILE = "stable_releases.txt"
@@ -111,16 +115,34 @@ def calculate_aggregate_metrics(current_version):
     total_failure_count = 0
     average_response_times = []
     median_response_times = []
+    total_regular_tests = 0
+
+
+    large_total_request_count = 0
+    large_total_failure_count = 0
+    large_average_response_times = []
+    large_median_response_times = []
+    large_total_tests = 0
 
     file_name = f"all_results_{current_version}.csv"
 
     with open(file_name, newline="") as csvfile:
         csvreader = csv.DictReader(csvfile)
         for row in csvreader:
-            total_request_count += int(row["Request Count"])
-            total_failure_count += int(row["Failure Count"])
-            median_response_times.append(float(row["Median Response Time"]))  
-            average_response_times.append(float(row["Average Response Time"]))
+            if "large" in row["Test-Name"]:
+                large_total_request_count += int(row["Request Count"])
+                large_total_failure_count += int(row["Failure Count"])
+                large_median_response_times.append(float(row["Median Response Time"]))  
+                large_average_response_times.append(float(row["Average Response Time"]))
+                large_total_tests += 1
+            else:
+                total_request_count += int(row["Request Count"])
+                total_failure_count += int(row["Failure Count"])
+                median_response_times.append(float(row["Median Response Time"]))  
+                average_response_times.append(float(row["Average Response Time"]))
+                total_regular_tests += 1
+        
+    
     # upload this file to s3
     upload_to_s3(file_name, "litellm-load-tests", f"all_results_{current_version}.csv")
     # Calculating aggregate metrics
@@ -136,10 +158,10 @@ def calculate_aggregate_metrics(current_version):
 
 
     # Calculating average of average response times
-    average_of_average_response_times = sum(average_response_times) / total_tests
+    average_of_average_response_times = sum(average_response_times) / total_regular_tests
 
     # Median of median response times
-    median_of_median_response_times = sorted(median_response_times)[total_tests // 2]
+    median_of_median_response_times = sorted(median_response_times)[total_regular_tests // 2]
     if median_of_median_response_times > PASSING_MEDIAN_RESPONSE:
         # send a slack alert 
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is greater than {PASSING_MEDIAN_RESPONSE}")
@@ -155,7 +177,22 @@ def calculate_aggregate_metrics(current_version):
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Average Response Time={average_of_average_response_times} is greater than {PASSING_AVERAGE_RESPONSE}")
         return False
     
-    send_slack_message(f"✅✅✅✅✅✅✅✅✅✅\nRelease is stable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE} \n Failure Count={total_failure_count} is less than {PASSING_FAILURE_COUNT} \n Average Response Time={average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE}")
+
+    ## Check for large tests
+    if large_total_failure_count > PASSING_FAILURE_COUNT:
+        send_slack_message(f"❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Failure Count={large_total_failure_count} is greater than {PASSING_FAILURE_COUNT}")
+        return False
+    average_of_average_response_times_large = sum(large_average_response_times) / large_total_tests
+    if average_of_average_response_times_large > PASSING_AVERAGE_RESPONSE_LARGE_TESTS:
+        send_slack_message(f"❌❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Average Response Time={average_of_average_response_times_large} is greater than {PASSING_AVERAGE_RESPONSE}")
+        return False
+    
+    median_of_median_response_times_large = sorted(large_median_response_times)[large_total_tests // 2]
+    if median_of_median_response_times_large > PASSING_MEDIAN_RESPONSE_LARGE_TESTS:
+        send_slack_message(f"❌❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times_large} is greater than {PASSING_MEDIAN_RESPONSE}")
+        return False
+    
+    send_slack_message(f"✅✅✅✅✅✅✅✅✅✅\nRelease is stable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE} \n Failure Count={total_failure_count} is less than {PASSING_FAILURE_COUNT} \n Average Response Time={average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE}. \n Large Median Response Time={large_median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE_LARGE_TESTS} \n Large Average Response Time={large_average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE_LARGE_TESTS} \n Large Failure Count={large_total_failure_count} is less than {PASSING_FAILURE_COUNT_LARGE}")
 
     return {
         "Request Count": total_request_count,

@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import FastAPI, Query, BackgroundTasks
 from should_run_test import bump_version_and_check_num_models
 from github_helper import new_stable_release
-from run_locust_tests import run_all_cache_hits_locust_test, run_cache_off_locust_test, run_failed_responses_chat_completion, run_locust_test, run_no_cache_hits_locust_test
+from run_locust_tests import *
 from interpret_load_test import write_test_results_to_csv, get_current_litellm_version, calculate_aggregate_metrics
 
 app = FastAPI()
@@ -70,6 +70,30 @@ def run_stable_release_testing(current_version, csv_file):
     # runs this 4 times 
     # each test is 5 mins, 
     # total time = 60 mins for all tests
+
+
+    # run 100 user, 100 ramp up test
+
+    run_large_all_cache_hits_locust_test()
+    write_test_results_to_csv(
+        csv_file=csv_file,
+        current_version=current_version,
+        test_name="large_all_cache_hits"
+    )
+    run_large_no_cache_hits_locust_test()
+    write_test_results_to_csv(
+        csv_file=csv_file,
+        current_version=current_version,
+        test_name="large_no_cache_hits"
+    )
+    run_large_cache_off_locust_test()
+    write_test_results_to_csv(
+        csv_file=csv_file,
+        current_version=current_version,
+        test_name="large_cache_off"
+    )
+
+
     for _ in range(4):
         run_all_cache_hits_locust_test()
         write_test_results_to_csv(
