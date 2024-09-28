@@ -286,5 +286,10 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
                 writer.writeheader()
 
             writer.writerows(rows)
+        
+        send_slack_message(
+            message=results
+
+        )
     return
             
