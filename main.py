@@ -28,6 +28,11 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
     current_version = get_current_litellm_version()
     csv_file = "load_test_stats.csv"
 
+    print(f"current_version={current_version}, testing version={version}")
+    if current_version != version:
+        print(f"version mismatch, skipping test. Current version={current_version}, version={version}. Not running stable tests and not making a new release")
+        return
+
     # run stable release testing
     run_stable_release_testing(
         current_version=current_version,
