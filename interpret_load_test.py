@@ -12,8 +12,8 @@ import github_helper
 from dotenv import load_dotenv
 load_dotenv()
 
-PASSING_MEDIAN_RESPONSE=200
-PASSING_AVERAGE_RESPONSE=200
+PASSING_MEDIAN_RESPONSE=150
+PASSING_AVERAGE_RESPONSE=150
 PASSING_FAILURE_COUNT=10
 PASSING_NUMBER_REQUESTS=144             # Total number mins = 144 * 5 = 720 = 12 hours
 PASSING_NUMBER_REQUESTS_DEV=12          # Total number mins = 12 * 5 = 60 = 1 hours
@@ -155,6 +155,8 @@ def calculate_aggregate_metrics(current_version):
         send_slack_message(f"❌❌❌❌❌❌❌❌❌❌❌\nRelease is unstable. \nVersion={current_version} \n Average Response Time={average_of_average_response_times} is greater than {PASSING_AVERAGE_RESPONSE}")
         return False
     
+    send_slack_message(f"✅✅✅✅✅✅✅✅✅✅\nRelease is stable. \nVersion={current_version} \n Median Response Time={median_of_median_response_times} is less than {PASSING_MEDIAN_RESPONSE} \n Failure Count={total_failure_count} is less than {PASSING_FAILURE_COUNT} \n Average Response Time={average_of_average_response_times} is less than {PASSING_AVERAGE_RESPONSE}")
+
     return {
         "Request Count": total_request_count,
         "Failure Count": total_failure_count,
