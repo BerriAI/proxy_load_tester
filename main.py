@@ -40,14 +40,14 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
     )
     print(f"testing done, making new stable release, version={version}, commit_hash={commit_hash}")
 
-    # if check_metrics_on_release(current_version, csv_file) is True:
-    #     # new release
-    #     new_stable_release(
-    #         version=version,
-    #         commit_hash=commit_hash
-    #     )
-    # else:
-    #     print("got an unstable release")
+    if check_metrics_on_release(current_version, csv_file) is True:
+        # new release
+        new_stable_release(
+            version=version,
+            commit_hash=commit_hash
+        )
+    else:
+        print("got an unstable release")
 
 @app.post("/start/load/test")
 async def start_load_test(

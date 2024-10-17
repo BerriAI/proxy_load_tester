@@ -16,7 +16,6 @@ def new_stable_release(version, commit_hash):
               "https://api.github.com/repos/BerriAI/litellm/actions/workflows/ghcr_deploy.yml/dispatches" \
               -d "{\"ref\":\"main\", \"inputs\":{\"tag\":\"v${VERSION}\"}}"
     """
-    return
     new_version_name = f"v{version}-stable"
     response = requests.post(
         "https://api.github.com/repos/BerriAI/litellm/actions/workflows/ghcr_deploy.yml/dispatches",
