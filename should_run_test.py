@@ -65,7 +65,7 @@ def check_if_latest_was_tested():
 def get_current_litellm_version():
     try:
         print("getting current litellm version")
-        response = requests.get('https://https://litellm-production-6ee2.up.railway.app//health/readiness')
+        response = requests.get('https://litellm-production-6ee2.up.railway.app/health/readiness')
         version = response.json()["litellm_version"]
         print("current litellm version on staging", version)
         return version
@@ -76,7 +76,7 @@ def get_current_litellm_version():
 def _check_num_models():
     print("getting current litellm version")
     response = requests.get(
-            url = 'https://https://litellm-production-6ee2.up.railway.app//v2/model/info', 
+            url = 'https://litellm-production-6ee2.up.railway.app/v2/model/info', 
             headers={"Authorization": f"Bearer sk-54d77cd67b9febbb"},
     )
     models = response.json()
