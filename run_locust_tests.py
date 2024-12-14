@@ -9,7 +9,7 @@ def run_locust_test(script_name):
             "--headless",
             "-u", "20",
             "-r", "20",
-            "-H", "https://litellm-production-6ee2.up.railway.app/",
+            "-H", "https://litellm-stable-release-service.onrender.com/",
             "-t", "100",
             "--csv", "load_test"
         ]
@@ -41,7 +41,7 @@ def run_large_user_locust_test(script_name):
             "--headless",
             "-u", "100",
             "-r", "100",
-            "-H", "https://litellm-production-6ee2.up.railway.app/",
+            "-H", "https://litellm-stable-release-service.onrender.com/",
             "-t", "100",
             "--csv", "load_test"
         ]
