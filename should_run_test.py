@@ -1,6 +1,6 @@
 import os
 import requests
-from .interpret_load_test import send_slack_message
+from interpret_load_test import send_slack_message
 # decides if we need to run a load test or not
 
 """
@@ -63,10 +63,10 @@ def check_if_latest_was_tested():
         return False, latest
 
 
-def get_current_litellm_version():
+def get_current_litellm_version(proxy_endpoint: str):
     try:
         print("getting current litellm version")
-        response = requests.get('https://litellm-stable-release-service.onrender.com/health/readiness')
+        response = requests.get(f'{proxy_endpoint}/health/readiness')
         version = response.json()["litellm_version"]
         print("current litellm version on staging", version)
         return version
@@ -74,44 +74,32 @@ def get_current_litellm_version():
         pass
 
 
-def _check_num_models():
-    print("getting current litellm version")
-    response = requests.get(
-            url = 'https://litellm-stable-release-service.onrender.com/v2/model/info', 
-            headers={"Authorization": f"Bearer sk-54d77cd67b9febbb"},
-    )
-    models = response.json()
-    print("models _response: ", models)
+def _check_num_models(proxy_endpoint: str):
+    try:
+        print("getting current litellm version")
+        response = requests.get(
+                url = f'{proxy_endpoint}/v2/model/info', 
+                headers={"Authorization": f"Bearer sk-54d77cd67b9febbb"},
+        )
+        models = response.json()
+        print("models _response: ", models)
 
-    _models = models["data"]
-    assert len(_models) > 0, "Staging has 0 models this is not the right configuration"
+        _models = models["data"]
+        assert len(_models) > 0, "Staging has 0 models this is not the right configuration"
 
-    _num_models_where_db_true = [model for model in _models if model["model_info"]["db_model"] == True]
-    print("_num_models_where_db_true: ", len(_num_models_where_db_true))
-    assert len(_num_models_where_db_true) > 20, f"At minimum staging should have 20 models with db_model=True, found only {len(_num_models_where_db_true)}"
-    _num_azure_models_in_db = [model for model in _models if model["litellm_params"]["model"].startswith("azure")]
-    print("_num_azure_models_in_db: ", len(_num_azure_models_in_db))
+        _num_models_where_db_true = [model for model in _models if model["model_info"]["db_model"] == True]
+        print("_num_models_where_db_true: ", len(_num_models_where_db_true))
+        assert len(_num_models_where_db_true) > 20, f"At minimum staging should have 20 models with db_model=True, found only {len(_num_models_where_db_true)}"
+        _num_azure_models_in_db = [model for model in _models if model["litellm_params"]["model"].startswith("azure")]
+        print("_num_azure_models_in_db: ", len(_num_azure_models_in_db))
 
-    assert len(_num_azure_models_in_db) >= 10, f"At minimum staging should have 10 azure models, found only {len(_num_azure_models_in_db)}"
-    print("num azure models in db: ", len(_num_azure_models_in_db))
-    return True
-
-
-
-def bump_version_and_check_num_models():
-    if _check_num_models() != True:
-        raise Exception("Number of models is not configure correctly - please look at logs")
-
-    # run curl to bump staging version
-    _webhook = os.getenv('STAGING_DEPLOY_WEBHOOK')
-    result = requests.get(_webhook)
-    if result.status_code == 200:
-        print("triggered new staging deploy + ready to run a new test. sleeping for 30 seconds before running a new test")
-        time.sleep(30)
+        assert len(_num_azure_models_in_db) >= 10, f"At minimum staging should have 10 azure models, found only {len(_num_azure_models_in_db)}"
+        print("num azure models in db: ", len(_num_azure_models_in_db))
         return True
-    else:
-        print("no need to trigger new staging deploy / load test. check_if_latest_was_tested=True")
-        return False
+    except Exception as e:
+        send_slack_message(f"🚨 Staging is not ready to run a new test. Error: {e}")
+        raise Exception("Staging is not ready to run a new test")
+
 
 
 def validate_callbacks_active(proxy_endpoint: str):

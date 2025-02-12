@@ -80,10 +80,10 @@ def upload_to_s3(file_path, bucket_name, object_name):
 
     
 
-def get_current_litellm_version():
+def get_current_litellm_version(proxy_endpoint: str):
     try:
-        print("getting current litellm version")
-        response = requests.get('https://litellm-stable-release-service.onrender.com/health/readiness')
+        print(f"getting current litellm version from {proxy_endpoint}")
+        response = requests.get(f'{proxy_endpoint}/health/readiness')
         version = response.json()["litellm_version"]
         
         filename = f"all_results_{version}.csv"
