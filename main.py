@@ -8,6 +8,7 @@ from typing import Optional
 from fastapi import FastAPI, Query, BackgroundTasks
 from should_run_test import bump_version_and_check_num_models
 from github_helper import new_stable_release
+from .interpret_load_test import send_slack_message
 from run_locust_tests import *
 from interpret_load_test import write_test_results_to_csv, get_current_litellm_version, calculate_aggregate_metrics
 
@@ -30,7 +31,8 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
 
     print(f"current_version={current_version}, testing version={version}")
     if current_version != version:
-        print(f"version mismatch, skipping test. Current version={current_version}, version={version}. Not running stable tests and not making a new release")
+        print(f"version mismatch, skipping test. Current version={current_version}, version={version}. Not running load tests and not making a new release")
+        send_slack_message(f"🚨 version mismatch, skipping test. Current version={current_version}, version to test={version}. Not running load tests")
         return
 
     # run stable release testing
