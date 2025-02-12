@@ -4,7 +4,7 @@ Fast API app
 - POST /start/load/test, params = {version, commit_hash}
 """
 import time
-from typing import Optional
+from typing import Optional, Literal
 from fastapi import FastAPI, Query, BackgroundTasks
 from should_run_test import bump_version_and_check_num_models
 from github_helper import new_stable_release
@@ -12,8 +12,11 @@ from .interpret_load_test import send_slack_message
 from run_locust_tests import *
 from interpret_load_test import write_test_results_to_csv, get_current_litellm_version, calculate_aggregate_metrics
 
+STABLE_RELEASE_ENDPOINT = "https://litellm-stable-release-service.onrender.com"
+NIGHTLY_RELEASE_ENDPOINT = "https://post-release-load-test-proxy.onrender.com"
+
 app = FastAPI()
-def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] = False):
+def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] = False, release_type: Optional[Literal["stable", "nightly"]] = "stable"):
     print(f"Starting load test for version {version} with commit hash {commit_hash}")
 
     # it takes 15 mins for a new docker build, sleep for 30 mins
@@ -38,7 +41,8 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
     # run stable release testing
     run_stable_release_testing(
         current_version=current_version,
-        csv_file=csv_file
+        csv_file=csv_file,
+        proxy_endpoint=STABLE_RELEASE_ENDPOINT if release_type == "stable" else NIGHTLY_RELEASE_ENDPOINT
     )
     print(f"testing done, making new stable release, version={version}, commit_hash={commit_hash}")
 
@@ -56,11 +60,12 @@ async def start_load_test(
     background_tasks: BackgroundTasks,
     version: str = Query(..., description="Version of the load test"),
     commit_hash: str = Query(..., description="Commit hash for the load test"),
-    skip_sleep: Optional[bool] = False
+    skip_sleep: Optional[bool] = False,
+    release_type: Optional[Literal["stable", "nightly"]] = Query(..., description="Release type")
 ):
 
     print(f"Starting load test for version {version} with commit hash {commit_hash}")
-    background_tasks.add_task(background_task, version, commit_hash, skip_sleep)
+    background_tasks.add_task(background_task, version, commit_hash, skip_sleep, release_type)
 
     return {
         "message": "Load test started",
