@@ -6,7 +6,7 @@ Fast API app
 import time
 from typing import Optional, Literal
 from fastapi import FastAPI, Query, BackgroundTasks
-from should_run_test import bump_version_and_check_num_models
+from should_run_test import bump_version_and_check_num_models, validate_callbacks_active
 from github_helper import new_stable_release
 from .interpret_load_test import send_slack_message
 from run_locust_tests import *
@@ -37,6 +37,9 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
         print(f"version mismatch, skipping test. Current version={current_version}, version={version}. Not running load tests and not making a new release")
         send_slack_message(f"🚨 version mismatch, skipping test. Current version={current_version}, version to test={version}. Not running load tests")
         return
+    
+    validate_callbacks_active()
+    
 
     # run stable release testing
     run_stable_release_testing(

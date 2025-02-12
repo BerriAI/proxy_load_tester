@@ -1,5 +1,6 @@
 import os
 import requests
+from .interpret_load_test import send_slack_message
 # decides if we need to run a load test or not
 
 """
@@ -111,4 +112,19 @@ def bump_version_and_check_num_models():
     else:
         print("no need to trigger new staging deploy / load test. check_if_latest_was_tested=True")
         return False
+
+
+def validate_callbacks_active(proxy_endpoint: str):
+    """
+    Validate that `langfuse` is in the `active_callbacks` field in the `/health/readiness` endpoint
+    """
+    response = requests.get(f'{proxy_endpoint}/health/readiness')
+
+    if response.status_code != 200:
+        send_slack_message(f"🚨 Staging is not ready to run a new test. Status code: {response.status_code}")
+        raise Exception("Staging is not ready to run a new test")
+    if "langfuse" not in response.text.lower():
+        send_slack_message(f"🚨 Langfuse not in active callbacks, /health/readiness response: {response.text}")
+        raise Exception("Langfuse not in active callbacks")
+    return True
 
