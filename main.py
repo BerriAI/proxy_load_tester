@@ -68,7 +68,11 @@ async def start_load_test(
         "commit_hash": commit_hash
     }
 
-def run_stable_release_testing(current_version, csv_file):
+def run_stable_release_testing(
+    current_version: str,
+    csv_file: str,
+    proxy_endpoint: str,
+):
     # runs this 4 times 
     # each test is 5 mins, 
     # total time = 60 mins for all tests
@@ -76,19 +80,19 @@ def run_stable_release_testing(current_version, csv_file):
 
     # run 100 user, 100 ramp up test
 
-    run_large_all_cache_hits_locust_test()
+    run_large_all_cache_hits_locust_test(proxy_endpoint)
     write_test_results_to_csv(
         csv_file=csv_file,
         current_version=current_version,
         test_name="large_all_cache_hits"
     )
-    run_large_no_cache_hits_locust_test()
+    run_large_no_cache_hits_locust_test(proxy_endpoint)
     write_test_results_to_csv(
         csv_file=csv_file,
         current_version=current_version,
         test_name="large_no_cache_hits"
     )
-    run_large_cache_off_locust_test()
+    run_large_cache_off_locust_test(proxy_endpoint)
     write_test_results_to_csv(
         csv_file=csv_file,
         current_version=current_version,
@@ -97,7 +101,7 @@ def run_stable_release_testing(current_version, csv_file):
 
 
     for _ in range(4):
-        run_all_cache_hits_locust_test()
+        run_all_cache_hits_locust_test(proxy_endpoint)
         write_test_results_to_csv(
             csv_file=csv_file,
             current_version=current_version,
@@ -105,7 +109,7 @@ def run_stable_release_testing(current_version, csv_file):
         )
 
 
-        run_cache_off_locust_test() 
+        run_cache_off_locust_test(proxy_endpoint) 
         write_test_results_to_csv(
             csv_file=csv_file,
             current_version=current_version,
@@ -113,7 +117,7 @@ def run_stable_release_testing(current_version, csv_file):
         )
 
 
-        run_no_cache_hits_locust_test()
+        run_no_cache_hits_locust_test(proxy_endpoint)
         write_test_results_to_csv(
             csv_file=csv_file,
             current_version=current_version,
