@@ -40,7 +40,8 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
         send_slack_message(f"🚨 version mismatch, skipping test. Current version={current_version}, version to test={version}. Not running load tests")
         return
     
-    validate_callbacks_active(endpoint)
+    if release_type == "nightly":
+        validate_callbacks_active(endpoint)
     
 
     # run stable release testing
