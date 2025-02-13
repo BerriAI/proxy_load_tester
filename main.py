@@ -6,7 +6,7 @@ Fast API app
 import time
 from typing import Optional, Literal
 from fastapi import FastAPI, Query, BackgroundTasks
-from should_run_test import _check_num_models, validate_callbacks_active
+from should_run_test import bump_version_and_check_num_models, validate_callbacks_active
 from github_helper import new_stable_release
 from interpret_load_test import send_slack_message
 from run_locust_tests import *
@@ -28,7 +28,7 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
     endpoint = STABLE_RELEASE_ENDPOINT if release_type == "stable" else NIGHTLY_RELEASE_ENDPOINT
 
     # bump staging server version
-    _check_num_models(endpoint)
+    bump_version_and_check_num_models(release_type=release_type, endpoint=endpoint)
     
     # get current litellm version
     current_version = get_current_litellm_version(endpoint)

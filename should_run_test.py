@@ -1,6 +1,7 @@
 import os
 import requests
 from interpret_load_test import send_slack_message
+from typing import Literal
 # decides if we need to run a load test or not
 
 """
@@ -115,4 +116,22 @@ def validate_callbacks_active(proxy_endpoint: str):
         send_slack_message(f"🚨 Langfuse not in active callbacks, /health/readiness response: {response.text}")
         raise Exception("Langfuse not in active callbacks")
     return True
+
+def bump_version_and_check_num_models(release_type: Literal["stable", "nightly"], endpoint: str):
+    if _check_num_models(endpoint) != True:
+        raise Exception("Number of models is not configure correctly - please look at logs")
+
+    # run curl to bump staging version
+    _webhook = os.getenv('STAGING_DEPLOY_WEBHOOK')
+    if release_type == "nightly":
+        _webhook = os.getenv('NIGHTLY_DEPLOY_WEBHOOK')
+    result = requests.get(_webhook)
+    if result.status_code == 200:
+        print("triggered new staging deploy + ready to run a new test. sleeping for 30 seconds before running a new test")
+        time.sleep(30)
+        return True
+    else:
+        print("no need to trigger new staging deploy / load test. check_if_latest_was_tested=True")
+        return False
+
 
