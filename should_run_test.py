@@ -126,12 +126,6 @@ def bump_version_and_check_num_models(release_type: Literal["stable", "nightly"]
     if release_type == "nightly":
         _webhook = os.getenv('NIGHTLY_DEPLOY_WEBHOOK')
     result = requests.get(_webhook)
-    if result.status_code == 200:
-        print("triggered new staging deploy + ready to run a new test. sleeping for 30 seconds before running a new test")
-        time.sleep(30)
-        return True
-    else:
-        print("no need to trigger new staging deploy / load test. check_if_latest_was_tested=True")
-        return False
 
-
+    print("sleeping for 30 seconds before running a new test")
+    time.sleep(30)
