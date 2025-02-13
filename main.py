@@ -48,7 +48,8 @@ def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] =
     run_stable_release_testing(
         current_version=current_version,
         csv_file=csv_file,
-        proxy_endpoint=STABLE_RELEASE_ENDPOINT if release_type == "stable" else NIGHTLY_RELEASE_ENDPOINT
+        proxy_endpoint=STABLE_RELEASE_ENDPOINT if release_type == "stable" else NIGHTLY_RELEASE_ENDPOINT,
+        release_type=release_type
     )
     print(f"testing done, making new stable release, version={version}, commit_hash={commit_hash}")
 
@@ -83,6 +84,7 @@ def run_stable_release_testing(
     current_version: str,
     csv_file: str,
     proxy_endpoint: str,
+    release_type: Literal["stable", "nightly"]
 ):
     # runs this 4 times 
     # each test is 5 mins, 
@@ -90,28 +92,31 @@ def run_stable_release_testing(
 
 
     # run 100 user, 100 ramp up test
+    num_large_load_tests = 1
+    if release_type == "nightly":
+        num_large_load_tests = 4
+    for _ in range(num_large_load_tests):
+        run_large_all_cache_hits_locust_test(proxy_endpoint)
+        write_test_results_to_csv(
+            csv_file=csv_file,
+            current_version=current_version,
+            test_name="large_all_cache_hits"
+        )
+        run_large_no_cache_hits_locust_test(proxy_endpoint)
+        write_test_results_to_csv(
+            csv_file=csv_file,
+            current_version=current_version,
+            test_name="large_no_cache_hits"
+        )
+        run_large_cache_off_locust_test(proxy_endpoint)
+        write_test_results_to_csv(
+            csv_file=csv_file,
+            current_version=current_version,
+            test_name="large_cache_off"
+        )
 
-    run_large_all_cache_hits_locust_test(proxy_endpoint)
-    write_test_results_to_csv(
-        csv_file=csv_file,
-        current_version=current_version,
-        test_name="large_all_cache_hits"
-    )
-    run_large_no_cache_hits_locust_test(proxy_endpoint)
-    write_test_results_to_csv(
-        csv_file=csv_file,
-        current_version=current_version,
-        test_name="large_no_cache_hits"
-    )
-    run_large_cache_off_locust_test(proxy_endpoint)
-    write_test_results_to_csv(
-        csv_file=csv_file,
-        current_version=current_version,
-        test_name="large_cache_off"
-    )
-
-
-    for _ in range(4):
+    num_small_load_tests = 4
+    for _ in range(num_small_load_tests):
         run_all_cache_hits_locust_test(proxy_endpoint)
         write_test_results_to_csv(
             csv_file=csv_file,
