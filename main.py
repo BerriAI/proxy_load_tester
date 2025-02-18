@@ -19,11 +19,11 @@ app = FastAPI()
 def background_task(version: str, commit_hash: str, skip_sleep: Optional[bool] = False, release_type: Optional[Literal["stable", "nightly"]] = "stable"):
     print(f"Starting load test for version {version} with commit hash {commit_hash}")
 
-    # it takes 15 mins for a new docker build, sleep for 30 mins
+    # it takes 15 mins for a new docker build, sleep for 90 mins
     if skip_sleep is True:
         print("skipping sleep")
     else:
-        time.sleep(30*60)
+        time.sleep(90*60)
     
     endpoint = STABLE_RELEASE_ENDPOINT if release_type == "stable" else NIGHTLY_RELEASE_ENDPOINT
 
