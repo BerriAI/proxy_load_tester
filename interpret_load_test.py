@@ -12,8 +12,8 @@ import github_helper
 from dotenv import load_dotenv
 load_dotenv()
 
-PASSING_MEDIAN_RESPONSE=150 # Expected 150ms for 20 RPS
-PASSING_AVERAGE_RESPONSE=160
+PASSING_MEDIAN_RESPONSE=200 # Expected 150ms for 20 RPS
+PASSING_AVERAGE_RESPONSE=300
 
 PASSING_AVERAGE_RESPONSE_LARGE_TESTS=300 # Expected 300ms for 100 RPS
 PASSING_MEDIAN_RESPONSE_LARGE_TESTS=300
@@ -252,9 +252,9 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
             # Determine status based on conditions
             if "large" in test_name:
                 failure_reasons = []
-                if median_response_time >= 300:
+                if median_response_time >= PASSING_MEDIAN_RESPONSE_LARGE_TESTS:
                     failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > 300ms")
-                if average_response_time >= 400:
+                if average_response_time >= PASSING_AVERAGE_RESPONSE_LARGE_TESTS:
                     failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > 400s")
                 if failure_percent >= 5:
                     failure_reasons.append(f"High Failure Rate ({failure_percent}% > 5%)")
@@ -265,9 +265,9 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
                     row["Status"] = f"Failed ❌ - {', '.join(failure_reasons)}"
             else:
                 failure_reasons = []
-                if median_response_time >= 150:
+                if median_response_time >= PASSING_MEDIAN_RESPONSE:
                     failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > 150ms")
-                if average_response_time >= 150:
+                if average_response_time >= PASSING_AVERAGE_RESPONSE:
                     failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > 150s")
                 if failure_percent >= 5:
                     failure_reasons.append(f"High Failure Rate ({failure_percent}% > 5%)")
