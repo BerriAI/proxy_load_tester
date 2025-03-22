@@ -96,6 +96,12 @@ def run_stable_release_testing(
     if release_type == "nightly":
         num_large_load_tests = 4
     for _ in range(num_large_load_tests):
+        run_large_no_cache_hits_azure_locust_test(proxy_endpoint)
+        write_test_results_to_csv(
+            csv_file=csv_file,
+            current_version=current_version,
+            test_name="large_no_cache_hits_azure"
+        )
         run_large_all_cache_hits_locust_test(proxy_endpoint)
         write_test_results_to_csv(
             csv_file=csv_file,
@@ -115,6 +121,8 @@ def run_stable_release_testing(
             test_name="large_cache_off"
         )
 
+
+        
     num_small_load_tests = 4
     for _ in range(num_small_load_tests):
         run_all_cache_hits_locust_test(proxy_endpoint)

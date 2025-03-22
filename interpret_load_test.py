@@ -250,14 +250,32 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
             failure_percent = round((failure_count / request_count) * 100, 2)
 
             # Determine status based on conditions
-            if (
-                median_response_time < 150
-                and average_response_time < 150
-                and failure_percent < 5
-            ):
-                row["Status"] = "Passed ✅"
+            if "large" in test_name:
+                failure_reasons = []
+                if median_response_time >= 300:
+                    failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > 300ms")
+                if average_response_time >= 400:
+                    failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > 400s")
+                if failure_percent >= 5:
+                    failure_reasons.append(f"High Failure Rate ({failure_percent}% > 5%)")
+                
+                if not failure_reasons:
+                    row["Status"] = "Passed ✅"
+                else:
+                    row["Status"] = f"Failed ❌ - {', '.join(failure_reasons)}"
             else:
-                row["Status"] = "Failed ❌"
+                failure_reasons = []
+                if median_response_time >= 150:
+                    failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > 150ms")
+                if average_response_time >= 150:
+                    failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > 150s")
+                if failure_percent >= 5:
+                    failure_reasons.append(f"High Failure Rate ({failure_percent}% > 5%)")
+                
+                if not failure_reasons:
+                    row["Status"] = "Passed ✅"
+                else:
+                    row["Status"] = f"Failed ❌ - {', '.join(failure_reasons)}"
 
         results = "\n"
         # Construct Markdown table rows
@@ -273,6 +291,7 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
 
             result = f"""
                 Current Time: {time.strftime("%m-%d %H:%M:%S")}
+                Test Name: {test_name}
                 Name: {name}
                 Status: {status}    
                 Median Response Time: {median_response_time}

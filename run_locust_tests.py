@@ -61,3 +61,8 @@ def run_large_no_cache_hits_locust_test(proxy_endpoint: str):
 
 def run_large_cache_off_locust_test(proxy_endpoint: str):
     run_large_user_locust_test("no_cache.py", proxy_endpoint)
+
+def run_large_no_cache_hits_azure_locust_test(proxy_endpoint: str):
+    run_large_user_locust_test("no_cache_hits_azure.py", proxy_endpoint)
+
+
