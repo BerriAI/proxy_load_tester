@@ -253,9 +253,9 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
             if "large" in test_name:
                 failure_reasons = []
                 if median_response_time >= PASSING_MEDIAN_RESPONSE_LARGE_TESTS:
-                    failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > 300ms")
+                    failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > {PASSING_MEDIAN_RESPONSE_LARGE_TESTS}ms")
                 if average_response_time >= PASSING_AVERAGE_RESPONSE_LARGE_TESTS:
-                    failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > 400s")
+                    failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > {PASSING_AVERAGE_RESPONSE_LARGE_TESTS}ms")
                 if failure_percent >= 5:
                     failure_reasons.append(f"High Failure Rate ({failure_percent}% > 5%)")
                 
@@ -266,9 +266,9 @@ def write_test_results_to_csv(csv_file, current_version, test_name=None):
             else:
                 failure_reasons = []
                 if median_response_time >= PASSING_MEDIAN_RESPONSE:
-                    failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > 150ms")
+                    failure_reasons.append(f"High Median Response Time. Median Response Time: {median_response_time}ms > {PASSING_MEDIAN_RESPONSE}ms")
                 if average_response_time >= PASSING_AVERAGE_RESPONSE:
-                    failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > 150s")
+                    failure_reasons.append(f"High Average Response Time. Average Response Time: {average_response_time}s > {PASSING_AVERAGE_RESPONSE}ms")
                 if failure_percent >= 5:
                     failure_reasons.append(f"High Failure Rate ({failure_percent}% > 5%)")
                 
