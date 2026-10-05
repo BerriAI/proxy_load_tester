@@ -20,5 +20,5 @@ class MyUser(HttpUser):
                 error_log.write(response.text + "\n")
 
     def on_start(self):
-        self.api_key = os.getenv('API_KEY', 'sk-1234')
+        self.api_key = os.environ['API_KEY']
         self.client.headers.update({'Authorization': f'Bearer {self.api_key}'})
