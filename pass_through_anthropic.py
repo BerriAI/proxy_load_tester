@@ -20,7 +20,7 @@ class MyUser(HttpUser):
             'anthropic-version': '2023-06-01',
             'tags': "['hi']",
             'content-type': 'application/json',
-            'Authorization': 'Bearer sk-1234'
+            'Authorization': f"Bearer {os.environ['API_KEY']}"
         }
         
         response = self.client.post("anthropic/v1/messages", json=payload, headers=headers)

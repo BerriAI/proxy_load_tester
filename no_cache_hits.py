@@ -27,7 +27,7 @@ class MyUser(HttpUser):
     wait_time = between(0.5, 1)  # Random wait time between requests
 
     def on_start(self):
-        self.api_key = os.getenv('API_KEY', 'sk-54d77cd67b9febbb')
+        self.api_key = os.environ['API_KEY']
         self.client.headers.update({'Authorization': f'Bearer {self.api_key}'})
 
     @task
@@ -44,4 +44,3 @@ class MyUser(HttpUser):
             # log the errors in error.txt
             with open("error.txt", "a") as error_log:
                 error_log.write(response.text + "\n")
-
